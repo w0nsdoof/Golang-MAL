@@ -1,0 +1,26 @@
+Table user {
+  id serial [primary key]
+  username text
+  email text
+  password text
+  created_at timestamp
+}
+
+Table anime {
+  id serial [primary key]
+  title text
+  genres text
+  rating float
+}
+
+// many-to-many
+Table user_and_anime {
+  id serial [primary key]
+  user_id int
+  anime_id int
+  status text
+  user_rating float
+}
+
+Ref: user_and_anime.user_id < users.id
+Ref: user_and_anime.anime_id < animes.id
