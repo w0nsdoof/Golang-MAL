@@ -1,0 +1,47 @@
+### Создание пользователя (Create User)
+POST http://localhost:8081/api/v1/users
+Content-Type: application/json
+
+{
+  "username": "w0nsdoof",
+  "email": "askar_zh@gmail.com",
+  "password": "password123"
+}
+
+> {%
+    client.test("Create User", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Получение информации о пользователе (Get User)
+GET http://localhost:8081/api/v1/users/1
+
+> {%
+    client.test("Get User", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Обновление информации о пользователе (Update User)
+PUT http://localhost:8081/api/v1/users/1
+Content-Type: application/json
+
+{
+  "email": "askar_zh@kbtu.kz"
+}
+
+> {%
+    client.test("Update User", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Удаление пользователя (Delete User)
+DELETE http://localhost:8081/api/v1/users/1
+
+> {%
+    client.test("Delete User", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
