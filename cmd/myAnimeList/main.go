@@ -32,14 +32,12 @@ func main() {
 	flag.StringVar(&cfg.db.dsn, "db-dsn", "postgresql://postgres:1473@localhost/golang?sslmode=disable", "PostgreSQL DSN")
 	flag.Parse()
 
-	// Connect to DB
 	db, err := openDB(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
-	// Initialize UserModel
 	userModel := &models.UserModel{DB: db}
 
 	app := &application{
@@ -55,17 +53,14 @@ func (app *application) run() {
 
 	v1 := r.PathPrefix("/api/v1").Subrouter()
 
-	// User Singleton
 	userHandler := &UserHandler{Model: app.userModel}
 
-	// Create a new user
 	v1.HandleFunc("/users", userHandler.CreateUser).Methods("POST")
-	// Get a specific user
 	v1.HandleFunc("/users/{id:[0-9]+}", userHandler.GetUser).Methods("GET")
-	// Update a specific user
 	v1.HandleFunc("/users/{id:[0-9]+}", userHandler.UpdateUser).Methods("PUT")
-	// Delete a specific user
 	v1.HandleFunc("/users/{id:[0-9]+}", userHandler.DeleteUser).Methods("DELETE")
+
+	v1.HandleFunc("/users", userHandler.GetAllUsers).Methods("GET")
 
 	log.Printf("Starting server on %s\n", app.config.port)
 	err := http.ListenAndServe(app.config.port, r)
@@ -73,7 +68,6 @@ func (app *application) run() {
 }
 
 func openDB(cfg config) (*sql.DB, error) {
-	// Use sql.Open() to create an empty connection pool, using the DSN from the config struct.
 	db, err := sql.Open("postgres", cfg.db.dsn)
 	if err != nil {
 		return nil, err

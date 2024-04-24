@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -30,13 +31,6 @@ func (um *UserModel) Insert(user *User) error {
 func (um *UserModel) Get(id int) (*User, error) {
 	query := `SELECT id, username, email, created_at FROM users WHERE id = $1`
 
-	/*
-		SELECT u.username, u.email,u.created_At a.id, a.title, a.genres, ua.user_rating
-		FROM users AS u
-		INNER JOIN user_and_anime AS ua ON u.id = ua.user_id
-		INNER JOIN animes AS a ON ua.anime_id = a.id
-	*/
-
 	var user User
 	err := um.DB.QueryRow(query, id).Scan(&user.ID, &user.Username, &user.Email, &user.CreatedAt)
 	if err != nil {
@@ -61,4 +55,43 @@ func (um *UserModel) Delete(id int) error {
 		return err
 	}
 	return nil
+}
+
+func (um *UserModel) GetAll(page, limit int, filter, sortBy, sortOrder string) ([]*User, error) {
+	query := "SELECT id, username, email, created_at FROM users"
+
+	if filter != "" {
+		query += fmt.Sprintf(" WHERE username LIKE '%%%s%%' '", filter)
+	}
+
+	if sortBy != "" {
+		query += fmt.Sprintf(" ORDER BY %s %s", sortBy, sortOrder)
+	}
+
+	if limit > 0 {
+		offset := (page - 1) * limit
+		query += fmt.Sprintf(" LIMIT %d OFFSET %d", limit, offset)
+	}
+
+	rows, err := um.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []*User
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }

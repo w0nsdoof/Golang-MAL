@@ -93,3 +93,20 @@ func (uh *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (uh *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	filter := r.URL.Query().Get("filter")
+	sortBy := r.URL.Query().Get("sortBy")
+	sortOrder := r.URL.Query().Get("sortOrder")
+
+	users, err := uh.Model.GetAll(page, limit, filter, sortBy, sortOrder)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(users)
+}
