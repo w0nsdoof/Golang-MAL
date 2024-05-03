@@ -53,21 +53,18 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	// Insert the user data into the database.
 	err = app.models.Users.Insert(user)
 	if err != nil {
-		switch {
-		// If we get an ErrDuplicateEmail error, use the v.AddError() method to manually add
-		// a message to the validator instance, and then call our failedValidationResponse
-		// helper().
-		case errors.Is(err, model.ErrDuplicateEmail):
+		err = model.HandleDatabaseError(err)
+		if errors.Is(err, model.ErrDuplicateEmail) {
 			v.AddError("email", "a user with this email address already exists")
-
 			app.failedValidationResponse(w, r, v.Errors)
-		default:
-			app.serverErrorResponse(w, r, err)
+			return
 		}
+
+		app.serverErrorResponse(w, r, err)
 		return
 	}
 
-	err = app.models.Permissions.AddForUser(user.ID, "menus:read")
+	err = app.models.Permissions.AddForUser(user.ID, "animes:read")
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
@@ -90,6 +87,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	res.User = user
 
 	app.writeJSON(w, http.StatusCreated, envelope{"user": res}, nil)
+
 }
 
 // activateUserHandler activates a user by setting 'activation = true' using the provided
