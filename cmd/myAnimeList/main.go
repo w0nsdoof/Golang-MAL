@@ -40,15 +40,15 @@ type application struct {
 }
 
 func main() {
-	fs := flag.NewFlagSet("demo-app", flag.ContinueOnError)
+	fs := flag.NewFlagSet("MyAnimeList", flag.ContinueOnError)
 
 	var (
 		cfg        config
-		fill       = fs.Bool("fill", false, "Fill database with dummy data")
-		migrations = fs.String("migrations", "C:/Users/Askar/GolandProjects/Final-project/migrations", "Path to migration files folder. If not provided, migrations do not applied")
+		fill       = fs.Bool("fill", true, "Fill database with dummy data")
+		migrations = fs.String("migrations", "", "Path to migration files folder. If not provided, migrations do not applied")
 		port       = fs.Int("port", 8081, "API server port")
 		env        = fs.String("env", "development", "Environment (development|staging|production)")
-		dbDsn      = fs.String("dsn", "postgres://postgres:1473@localhost:5432/example?sslmode=disable", "PostgreSQL DSN")
+		dbDsn      = fs.String("dsn", "postgres://postgres:1473@localhost:5432/myanimelist?sslmode=disable", "PostgreSQL DSN")
 	)
 
 	logger := jsonlog.NewLogger(os.Stdout, jsonlog.LevelInfo)
@@ -74,6 +74,7 @@ func main() {
 
 	db, err := openDB(cfg)
 	if err != nil {
+		fmt.Print(db)
 		logger.PrintError(err, nil)
 		return
 	}

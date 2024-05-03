@@ -21,7 +21,7 @@ func (app *application) routes() http.Handler {
 	anime1 := r.PathPrefix("/api/v1").Subrouter()
 
 	// Menu Singleton
-	// localhost:8081/api/v1/menus
+	// localhost:8081/api/v1/animes
 	anime1.HandleFunc("/animes", app.getAnimesList).Methods("GET") // TODO:
 	anime1.HandleFunc("/animes", app.createAnimeHandler).Methods("POST")
 	anime1.HandleFunc("/animes/{id:[0-9]+}", app.getAnimeHandler).Methods("GET")
@@ -30,7 +30,7 @@ func (app *application) routes() http.Handler {
 
 	users1 := r.PathPrefix("/api/v1").Subrouter()
 	// User handlers with Authentication
-	users1.HandleFunc("/users", app.registerUserHandler).Methods("POST")
+	users1.HandleFunc("/users", app.registerUserHandler).Methods("POST") // TODO: the value gets into DB, but server doesn't respond + log.error
 	users1.HandleFunc("/users/activated", app.activateUserHandler).Methods("PUT")
 	users1.HandleFunc("/users/login", app.createAuthenticationTokenHandler).Methods("POST")
 
