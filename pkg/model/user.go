@@ -8,8 +8,10 @@ import (
 	"log"
 	"time"
 
-	"final-project/pkg/validator"
+	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
+
+	"final-project/pkg/validator"
 )
 
 var (
@@ -230,4 +232,11 @@ func ValidateUser(v *validator.Validator, user *User) {
 		// TODO: fix this panic
 		panic("missing password hash for user")
 	}
+}
+
+func HandleDatabaseError(err error) error {
+	if pqErr, ok := err.(*pq.Error); ok && pqErr.Code.Name() == "unique_violation" && pqErr.Constraint == "users_email_key" {
+		return ErrDuplicateEmail
+	}
+	return err
 }
