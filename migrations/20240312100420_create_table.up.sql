@@ -30,3 +30,28 @@ CREATE TABLE IF NOT EXISTS user_and_anime (
   updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT user_anime_unique UNIQUE (user_id, anime_id)
 );
+
+CREATE TABLE IF NOT EXISTS tokens
+(
+	hash    BYTEA PRIMARY KEY,
+	user_id BIGINT                      NOT NULL REFERENCES users ON DELETE CASCADE,
+	expiry  TIMESTAMP(0) WITH TIME ZONE NOT NULL,
+	scope   TEXT                        NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS permissions
+(
+	id   BIGSERIAL PRIMARY KEY,
+	code TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS users_permissions
+(
+	user_id       BIGINT NOT NULL REFERENCES users ON DELETE CASCADE,
+	permission_id BIGINT NOT NULL REFERENCES permissions ON DELETE CASCADE,
+	PRIMARY KEY (user_id, permission_id)
+);
+
+INSERT INTO permissions (code)
+VALUES ('menus:read'),
+			 ('menus:write');
