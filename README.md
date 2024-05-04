@@ -51,11 +51,17 @@ Ref: user_and_anime.user_id < users.id
 Ref: user_and_anime.anime_id < animes.id
 ```
 
-## Quick start
+## How to run app
 
-Requirements: golang, gobuffalo-soda, postgresql
+### Using app golang directly on Terminal
 
-- soda g config
-- update information in database.yml
-- soda migrate up
-- go run .\cmd\myAnimeList\...
+Provide all needed correct values.
+
+```shell
+go run ./cmd/myAnimeList\
+-dsn="postgres://postgres:1473@localhost:5432/myanimelist?sslmode=disable" \
+-migrations=migrations \
+-fill=true \
+-env=development \
+-port=8081
+```

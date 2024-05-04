@@ -44,7 +44,7 @@ func main() {
 
 	var (
 		cfg        config
-		fill       = fs.Bool("fill", true, "Fill database with dummy data")
+		fill       = fs.Bool("fill", false, "Fill database with dummy data")
 		migrations = fs.String("migrations", "", "Path to migration files folder. If not provided, migrations do not applied")
 		port       = fs.Int("port", 8081, "API server port")
 		env        = fs.String("env", "development", "Environment (development|staging|production)")

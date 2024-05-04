@@ -54,8 +54,9 @@ func (app *application) getAnimesList(w http.ResponseWriter, r *http.Request) {
 	input.Filters.Sort = app.readStrings(qs, "sort", "id")
 
 	input.Filters.SortSafeList = []string{
-		"id", "title",
-		"-id", "-title",
+		"id", "-id",
+		"title", "-title",
+		"rating", "-rating",
 	}
 
 	if model.ValidateFilters(v, input.Filters); !v.Valid() {
