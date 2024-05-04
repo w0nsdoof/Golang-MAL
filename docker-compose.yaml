@@ -1,0 +1,25 @@
+services:
+  myanimelist:
+    container_name: myanimelist
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+  db:
+    container_name: db
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5430:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata: {}

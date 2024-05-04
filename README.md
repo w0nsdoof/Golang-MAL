@@ -45,6 +45,8 @@ Table user_and_anime {
   anime_id int
   status text
   user_rating float
+  created_at timestamp
+  updated_at timestamp
 }
 
 Ref: user_and_anime.user_id < users.id
@@ -58,10 +60,25 @@ Ref: user_and_anime.anime_id < animes.id
 Provide all needed correct values.
 
 ```shell
-go run ./cmd/myAnimeList\
--dsn="postgres://postgres:1473@localhost:5432/myanimelist?sslmode=disable" \
+go run ./cmd/myAnimeList/
+-dsn="postgres://postgres:password@localhost:5432/database_name?sslmode=disable" \
 -migrations=migrations \
 -fill=true \
 -env=development \
 -port=8081
+```
+
+### Run with docker-compose
+
+Up database service
+
+```bash
+  docker compose up -d db
+```
+
+Build and up myanimelist service
+
+```bash
+  docker compose build myanimelist
+  docker compose up myanimelist
 ```

@@ -1,10 +1,12 @@
 Table user {
-  id serial [primary key]
-  username text
-  email text
-  password text
-  created_at timestamp
+  id          bigint    
+  name        text      
+  email       text      
+  password    text      
+  activated   boolean   
+  version     int      
 }
+
 
 Table anime {
   id serial [primary key]
