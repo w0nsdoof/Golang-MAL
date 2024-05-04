@@ -95,7 +95,7 @@ func (am *AnimeModel) Get(id int) (*Anime, error) {
 	defer cancel()
 
 	row := am.DB.QueryRowContext(ctx, query, id)
-	err := row.Scan(&anime.Id, &anime.Rating, &anime.Title, &anime.Genres)
+	err := row.Scan(&anime.Id, &anime.Title, &anime.Rating, &anime.Genres)
 	if err != nil {
 		return nil, fmt.Errorf("cannot retrive anime with id: %v, %w", id, err)
 	}
@@ -103,13 +103,14 @@ func (am *AnimeModel) Get(id int) (*Anime, error) {
 }
 
 func (am *AnimeModel) Update(anime *Anime) error {
-	query := `UPDATE animes SET title=$1, rating=$2, genres=$3 WHERE id = &4`
+	query := `UPDATE animes SET title=$1, rating=$2, genres=$3 WHERE id = $4`
 
 	args := []interface{}{anime.Title, anime.Rating, anime.Genres, anime.Id}
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	return am.DB.QueryRowContext(ctx, query, args...).Scan()
+	_, err := am.DB.ExecContext(ctx, query, args...)
+	return err
 }
 
 func (am *AnimeModel) Delete(id int) error {

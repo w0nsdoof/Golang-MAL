@@ -36,3 +36,5 @@ var animes = []model.Anime{
 	{Title: "The Promised Neverland", Rating: 8.7, Genres: "Sci-Fi, Mystery, Horror"},
 	{Title: "Bleach", Rating: 7.9, Genres: "Action, Adventure, Supernatural"},
 }
+
+// INSERT INTO users (name, email, password_hash, activated)

@@ -41,5 +41,15 @@ func NewModels(db *sql.DB) Models {
 			InfoLog:  infoLog,
 			ErrorLog: errorLog,
 		},
+		Tokens: TokenModel{
+			DB:       db,
+			InfoLog:  infoLog,
+			ErrorLog: errorLog,
+		},
+		Permissions: PermissionModel{
+			DB:       db,
+			InfoLog:  infoLog,
+			ErrorLog: errorLog,
+		},
 	}
 }
