@@ -88,21 +88,42 @@
 				},
 				{
 					"name": "Delete anime",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "IRBBHYLUET64ZBEWYSYIF5ZOGI",
-									"type": "string"
-								}
-							]
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const animes = pm.environment.get(\"animes\");\r",
+									"const token = pm.environment.get(\"token\");\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\",\r",
+									"    value: \"Bearer \" + token\r",
+									"});\r",
+									"const id = animes && animes.length > 0 ? animes[0].id : 1;\r",
+									"pm.variables.set(\"id\", id)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('response is unauthorized', () => {\r",
+									"\tpm.response.to.have.status(403);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{BASE_URL}}/api/v1/animes/1",
+							"raw": "{{BASE_URL}}/api/v1/animes/{{id}}",
 							"host": [
 								"{{BASE_URL}}"
 							],
@@ -110,7 +131,7 @@
 								"api",
 								"v1",
 								"animes",
-								"1"
+								"{{id}}"
 							],
 							"query": [
 								{
@@ -135,7 +156,10 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									""
+									"const randomId = Math.random().toString(36).substring(2, 10);\r",
+									"pm.environment.set(\"email\", `${randomId}@example.com`);\r",
+									"pm.environment.set(\"password\", `password${randomId}`);\r",
+									"pm.environment.set(\"name\", `Name-${randomId}`);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -145,8 +169,20 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"// let responseData = JSON.parse(responseBody);\r",
-									"// postman.setEnvironmentVariable(\"token\", responseData.token);"
+									"const responseData = pm.response.json();\r",
+									"pm.environment.set(\"activationToken\", responseData.user.token);\r",
+									"\r",
+									"pm.test('response is ok', () => {\r",
+									"\tpm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test('response should have json with activationToken', () => {\r",
+									"\tconst response = pm.response.json();\r",
+									"\r",
+									"\t// Check that field in response\r",
+									"\tpm.expect(response.user.token).to.be.string;\r",
+									"});\r",
+									""
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -158,7 +194,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"admin@gmail.com\",\r\n    \"name\" : \"admin\",\r\n    \"password\" : \"password\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"{{email}}\",\r\n    \"name\" : \"{{name}}\",\r\n    \"password\" : \"{{password}}\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -181,12 +217,33 @@
 				},
 				{
 					"name": "Activate user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('response is ok', () => {\r",
+									"\tpm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('user should be activated', () => {\r",
+									"\tconst response = pm.response.json();\r",
+									"\r",
+									"\t// Check that field in response\r",
+									"\tpm.expect(response.user.activated).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"token\" : \"R3X7RBQXV4WVJS7WHIQV4XQV3E\"\r\n}",
+							"raw": "{\r\n    \"token\": \"{{activationToken}}\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -210,12 +267,38 @@
 				},
 				{
 					"name": "Login user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();\r",
+									"\r",
+									"pm.test('response is ok', () => {\r",
+									"\tpm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"const token = res.authentication_token.token;\r",
+									"\r",
+									"pm.test('response should have json with auth token', () => {\r",
+									"\t// Check that field in response\r",
+									"\tpm.expect(token).to.be.string;\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"token\", token);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"admin@gmail.com\",\r\n    \"password\" : \"password\"\r\n}",
+							"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -240,7 +323,252 @@
 			]
 		},
 		{
+			"name": "Animes",
+			"item": [
+				{
+					"name": "Animes List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();\r",
+									"pm.environment.set(\"animes\", res.animes);\r",
+									"\r",
+									"pm.test('response is ok', () => {\r",
+									"\tpm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('should respond with list', () => {\r",
+									"\t// Check that field in response\r",
+									"\tpm.expect(res.animes).to.be.an.instanceOf(Array);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/animes",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"animes"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "-rating",
+									"description": "(ASC or DESC)(column name)",
+									"disabled": true
+								},
+								{
+									"key": "page_size",
+									"value": "5",
+									"description": "Limit",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Offset by Limit",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Animes List Paginated",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.addQueryParams(\"page=2\");\r",
+									"pm.request.addQueryParams(\"page_size=2\")\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('response is ok', () => {\r",
+									"\tpm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('should respond with two items', () => {\r",
+									"\tconst response = pm.response.json();\r",
+									"\t// Check that field in response\r",
+									"\tpm.expect(response.animes.length).to.be.eq(2);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/animes",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"animes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Animes List Filtered",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.addQueryParams(\"title=Bleach\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('response is ok', () => {\r",
+									"\tpm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('should respond with two items', () => {\r",
+									"\tconst response = pm.response.json();\r",
+									"\t// Check that field in response\r",
+									"\tpm.expect(response.animes.length).to.be.eq(1);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/animes",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"animes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Animes List Sorted",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.addQueryParams(\"sort=-rating\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('response is ok', () => {\r",
+									"\tpm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('should be sorted descendent', () => {\r",
+									"\tconst response = pm.response.json();\r",
+									"\t// Check that field in response\r",
+									"\tpm.expect(response.animes[0].rating > response.animes[response.animes.length - 1].rating).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/animes",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"animes"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "HealthCheck",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"console.log(\"pre req\")"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"console.log(\"health check test\")\r",
+							"\r",
+							"pm.test('server is fine', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -260,11 +588,24 @@
 		},
 		{
 			"name": "List anime",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{BASE_URL}}/api/v1/animes?sort=-rating&page_size=5&page=1",
+					"raw": "{{BASE_URL}}/api/v1/animes?page_size=5",
 					"host": [
 						"{{BASE_URL}}"
 					],
@@ -277,7 +618,8 @@
 						{
 							"key": "sort",
 							"value": "-rating",
-							"description": "(ASC or DESC)(column name)"
+							"description": "(ASC or DESC)(column name)",
+							"disabled": true
 						},
 						{
 							"key": "page_size",
@@ -287,7 +629,8 @@
 						{
 							"key": "page",
 							"value": "1",
-							"description": "Offset by Limit"
+							"description": "Offset by Limit",
+							"disabled": true
 						}
 					]
 				}
