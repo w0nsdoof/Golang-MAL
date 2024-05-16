@@ -22,13 +22,13 @@ CREATE TABLE IF NOT EXISTS animes (
 
 CREATE TABLE IF NOT EXISTS user_and_anime (
   id          SERIAL PRIMARY KEY,
-  user_id     INT NOT NULL REFERENCES users(id),
-  anime_id    INT NOT NULL REFERENCES animes(id),
-  status      TEXT,
-  user_rating FLOAT,
+  userID      INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  animeID     INT NOT NULL REFERENCES animes(id) ON DELETE CASCADE,
+  rating      FLOAT,
+  review      TEXT,
   created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT user_anime_unique UNIQUE (user_id, anime_id)
+  CONSTRAINT user_anime_unique UNIQUE (userID, animeID)
 );
 
 CREATE TABLE IF NOT EXISTS tokens
@@ -54,3 +54,6 @@ CREATE TABLE IF NOT EXISTS users_permissions
 
 INSERT INTO permissions (code)
 VALUES ('animes:read'),('animes:write');
+
+INSERT INTO permissions (code)
+VALUES ('user_anime:read'),('user_anime:write');

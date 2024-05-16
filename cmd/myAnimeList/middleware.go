@@ -35,7 +35,7 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 			return
 		}
 
-		user, err := app.models.Users.GetForToken(model.ScopeAuthentication, token) // TODO: main
+		user, err := app.models.Users.GetForToken(model.ScopeAuthentication, token)
 		if err != nil {
 			switch {
 			case errors.Is(err, model.ErrRecordNotFound):
@@ -83,7 +83,7 @@ func (app *application) requirePermissions(code string, next http.HandlerFunc) h
 	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user := app.contextGetUser(r)
 
-		permissions, err := app.models.Permissions.GetAllForUser(user.ID) // TODO: main
+		permissions, err := app.models.Permissions.GetAllForUser(user.ID)
 		if err != nil {
 			app.serverErrorResponse(w, r, err)
 			return

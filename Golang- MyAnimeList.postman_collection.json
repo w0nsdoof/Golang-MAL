@@ -11,6 +11,44 @@
 			"item": [
 				{
 					"name": "Create anime",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const token = pm.environment.get(\"token\");\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\",\r",
+									"    value: \"Bearer \" + token\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('response is ok', () => {\r",
+									"\tpm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response body contains all fields\", function () {\r",
+									"    pm.response.to.have.jsonBody('anime');\r",
+									"    pm.response.to.have.jsonBody('anime.id');\r",
+									"    pm.response.to.have.jsonBody('anime.rating');\r",
+									"    pm.response.to.have.jsonBody('anime.title');\r",
+									"    pm.response.to.have.jsonBody('anime.genres');\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -39,9 +77,98 @@
 				},
 				{
 					"name": "Read anime",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('response is ok', () => {\r",
+									"\tpm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response body contains all fields\", function () {\r",
+									"    pm.response.to.have.jsonBody('anime');\r",
+									"    pm.response.to.have.jsonBody('anime.id');\r",
+									"    pm.response.to.have.jsonBody('anime.rating');\r",
+									"    pm.response.to.have.jsonBody('anime.title');\r",
+									"    pm.response.to.have.jsonBody('anime.genres');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/animes/6",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"animes",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update anime",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('response is ok', () => {\r",
+									"\tpm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response body contains all fields\", function () {\r",
+									"    pm.response.to.have.jsonBody('anime');\r",
+									"    pm.response.to.have.jsonBody('anime.id');\r",
+									"    pm.response.to.have.jsonBody('anime.rating');\r",
+									"    pm.response.to.have.jsonBody('anime.title');\r",
+									"    pm.response.to.have.jsonBody('anime.genres');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \r\n    \"title\" : \"Cyberpunk Edgerunners\",\r\n    \"rating\" : 10,\r\n    \"genres\" : \"Peakfiction,2077\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "{{BASE_URL}}/api/v1/animes/2",
 							"host": [
@@ -58,37 +185,21 @@
 					"response": []
 				},
 				{
-					"name": "Update anime",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{   \r\n    \"title\" : \"Cyberpunk Edgerunners\",\r\n    \"rating\" : 10,\r\n    \"genres\" : \"Peakfiction\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BASE_URL}}/api/v1/animes/1",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"animes",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Delete anime",
 					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('response is unauthorized', () => {\r",
+									"\tpm.response.to.have.status(403);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
 						{
 							"listen": "prerequest",
 							"script": {
@@ -100,19 +211,7 @@
 									"    value: \"Bearer \" + token\r",
 									"});\r",
 									"const id = animes && animes.length > 0 ? animes[0].id : 1;\r",
-									"pm.variables.set(\"id\", id)"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('response is unauthorized', () => {\r",
-									"\tpm.response.to.have.status(403);\r",
-									"});"
+									"pm.variables.set(\"animeID\", id)"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -122,6 +221,15 @@
 					"request": {
 						"method": "DELETE",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "{{BASE_URL}}/api/v1/animes/{{id}}",
 							"host": [
@@ -137,6 +245,11 @@
 								{
 									"key": "Authorization",
 									"value": "Bearer WBQB6L5QIGEIDLINJQNJYALVQQ",
+									"disabled": true
+								},
+								{
+									"key": "id",
+									"value": null,
 									"disabled": true
 								}
 							]
@@ -171,6 +284,8 @@
 								"exec": [
 									"const responseData = pm.response.json();\r",
 									"pm.environment.set(\"activationToken\", responseData.user.token);\r",
+									"\r",
+									"pm.environment.set(\"userID\", responseData.user.user.id);\r",
 									"\r",
 									"pm.test('response is ok', () => {\r",
 									"\tpm.response.to.have.status(201);\r",
@@ -542,6 +657,260 @@
 			]
 		},
 		{
+			"name": "CRUD user anime",
+			"item": [
+				{
+					"name": "Create user anime",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const animes = pm.environment.get(\"animes\");\r",
+									"const token = pm.environment.get(\"token\");\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\",\r",
+									"    value: \"Bearer \" + token\r",
+									"});\r",
+									"\r",
+									"if (animes && animes.length > 0) {\r",
+									"    const randomIndex = Math.floor(Math.random() * animes.length);\r",
+									"    const id = animes[randomIndex].id;\r",
+									"    pm.variables.set(\"animeID\", id);\r",
+									"} else {\r",
+									"    pm.variables.set(\"animeID\", 0);\r",
+									"}\r",
+									"\r",
+									"const randomInt = Math.floor(Math.random() * 11);\r",
+									"pm.environment.set(\"randomRating\", randomInt);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseData = pm.response.json();\r",
+									"pm.environment.set(\"userID\", responseData.userAnime.userID);\r",
+									"pm.environment.set(\"uaID\", responseData.userAnime.id);\r",
+									"\r",
+									"pm.test('response is ok', () => {\r",
+									"\tpm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"animeID\" : {{animeID}},\r\n    \"userID\" : {{userID}},\r\n    \"rating\" : {{randomRating}},\r\n    \"review\" : \"{{$randomCatchPhrase}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/user_animes",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user_animes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get animes of user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const animes = pm.environment.get(\"animes\");\r",
+									"const token = pm.environment.get(\"token\");\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\",\r",
+									"    value: \"Bearer \" + token\r",
+									"});\r",
+									"const id = animes && animes.length > 0 ? animes[0].id : 1;\r",
+									"pm.variables.set(\"id\", id)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('response is ok', () => {\r",
+									"\tpm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userID\" : 1,\r\n    \"animeID\" : 1,\r\n    \"rating\" : 9.00,\r\n    \"review\" : \"Best anime of 2023\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/user_animes/user/{{userID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user_animes",
+								"user",
+								"{{userID}}"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "-rating",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "page_size",
+									"value": "2",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user anime",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('response is ok', () => {\r",
+									"\tpm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\" : {{randomRating}},\r\n    \"review\" : \"{{$randomCatchPhrase}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/user_animes/{{uaID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user_animes",
+								"{{uaID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user anime",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test('response is ok', () => {\r",
+									"\tpm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userID\" : 1,\r\n    \"animeID\" : 1,\r\n    \"rating\" : 9.00,\r\n    \"review\" : \"Best anime of 2023\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/user_animes/{{uaID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user_animes",
+								"{{uaID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "HealthCheck",
 			"event": [
 				{
@@ -593,6 +962,18 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"const res = pm.response.json();\r",
+							"pm.environment.set(\"animes\", res.animes);\r",
+							"\r",
+							"pm.test('response is ok', () => {\r",
+							"\tpm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('should respond with list', () => {\r",
+							"\t// Check that field in response\r",
+							"\tpm.expect(res.animes).to.be.an.instanceOf(Array);\r",
+							"});\r",
+							"\r",
 							"\r",
 							""
 						],
@@ -605,7 +986,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{BASE_URL}}/api/v1/animes?page_size=5",
+					"raw": "{{BASE_URL}}/api/v1/animes",
 					"host": [
 						"{{BASE_URL}}"
 					],
@@ -624,7 +1005,74 @@
 						{
 							"key": "page_size",
 							"value": "5",
-							"description": "Limit"
+							"description": "Limit",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "1",
+							"description": "Offset by Limit",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List anime Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const res = pm.response.json();\r",
+							"pm.environment.set(\"animes\", res.animes);\r",
+							"\r",
+							"pm.test('response is ok', () => {\r",
+							"\tpm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('should respond with list', () => {\r",
+							"\t// Check that field in response\r",
+							"\tpm.expect(res.animes).to.be.an.instanceOf(Array);\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/api/v1/user_animes/animes/15",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user_animes",
+						"animes",
+						"15"
+					],
+					"query": [
+						{
+							"key": "sort",
+							"value": "-rating",
+							"description": "(ASC or DESC)(column name)",
+							"disabled": true
+						},
+						{
+							"key": "page_size",
+							"value": "5",
+							"description": "Limit",
+							"disabled": true
 						},
 						{
 							"key": "page",

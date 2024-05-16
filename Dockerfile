@@ -1,6 +1,9 @@
 # use official Golang image
 FROM golang:1.21.5
 
+RUN go install github.com/gobuffalo/pop/soda@latest
+RUN apt-get update && apt-get install -y postgresql-client
+
 # set working directory
 WORKDIR /myanimelist
 

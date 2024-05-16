@@ -23,34 +23,35 @@ DELETE /api/v1/users/{id}
 // Use DBML to define your database structure
 // Docs: https://dbml.dbdiagram.io/docs
 
-Table user {
-  id serial [primary key]
-  username text
-  email text
-  password text
-  created_at timestamp
+Table users {
+  id            bigint [pk]
+  created_at    timestamp
+  name          text
+  email         citext [unique]
+  password_hash bytea
+  activated     bool
+  version       integer
 }
 
-Table anime {
-  id serial [primary key]
-  title text
-  genres text
-  rating float
+Table animes {
+  id      serial [pk]
+  rating  float
+  title   text
+  genres  text
 }
 
-// many-to-many
 Table user_and_anime {
-  id serial [primary key]
-  user_id int
-  anime_id int
-  status text
-  user_rating float
-  created_at timestamp
-  updated_at timestamp
+  id          serial [pk]
+  userID      int [not null]
+  animeID     int [not null]
+  rating      float
+  review      text
+  created_at  timestamp
+  updated_at  timestamp
 }
 
-Ref: user_and_anime.user_id < users.id
-Ref: user_and_anime.anime_id < animes.id
+Ref: user_and_anime.userID > users.id
+Ref: user_and_anime.animeID > animes.id
 ```
 
 ## How to run app

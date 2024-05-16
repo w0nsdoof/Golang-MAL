@@ -146,10 +146,10 @@ ALTER TABLE public.tokens OWNER TO postgres;
 
 CREATE TABLE public.user_and_anime (
     id integer NOT NULL,
-    user_id integer NOT NULL,
-    anime_id integer NOT NULL,
-    status text,
-    user_rating double precision,
+    userid integer NOT NULL,
+    animeid integer NOT NULL,
+    rating double precision,
+    review text,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
@@ -310,7 +310,7 @@ ALTER TABLE ONLY public.user_and_anime
 --
 
 ALTER TABLE ONLY public.user_and_anime
-    ADD CONSTRAINT user_anime_unique UNIQUE (user_id, anime_id);
+    ADD CONSTRAINT user_anime_unique UNIQUE (userid, animeid);
 
 
 --
@@ -353,19 +353,19 @@ ALTER TABLE ONLY public.tokens
 
 
 --
--- Name: user_and_anime user_and_anime_anime_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: user_and_anime user_and_anime_animeid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.user_and_anime
-    ADD CONSTRAINT user_and_anime_anime_id_fkey FOREIGN KEY (anime_id) REFERENCES public.animes(id);
+    ADD CONSTRAINT user_and_anime_animeid_fkey FOREIGN KEY (animeid) REFERENCES public.animes(id) ON DELETE CASCADE;
 
 
 --
--- Name: user_and_anime user_and_anime_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: user_and_anime user_and_anime_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.user_and_anime
-    ADD CONSTRAINT user_and_anime_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT user_and_anime_userid_fkey FOREIGN KEY (userid) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --

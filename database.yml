@@ -3,5 +3,7 @@ development:
   database: myanimelist
   user: postgres
   password: 1473
-  host: 127.0.0.1
+  host: localhost
+  port: 5432
+  sslmode: disable
   pool: 5
