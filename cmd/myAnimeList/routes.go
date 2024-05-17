@@ -25,7 +25,7 @@ func (app *application) routes() http.Handler {
 	anime1.HandleFunc("/animes", app.getAnimesList).Methods("GET")
 	anime1.HandleFunc("/animes", app.requirePermissions("animes:write", app.createAnimeHandler)).Methods("POST")
 	anime1.HandleFunc("/animes/{id:[0-9]+}", app.getAnimeHandler).Methods("GET")
-	anime1.HandleFunc("/animes/{id:[0-9]+}", app.requirePermissions("animes:write", app.updateAnimeHandler)).Methods("PUT")
+	anime1.HandleFunc("/animes/{id:[0-9]+}", app.updateAnimeHandler).Methods("PUT")
 	anime1.HandleFunc("/animes/{id:[0-9]+}", app.requirePermissions("animes:write", app.deleteAnimeHandler)).Methods("DELETE")
 
 	users1 := r.PathPrefix("/api/v1").Subrouter()

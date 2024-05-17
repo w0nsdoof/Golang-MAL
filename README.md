@@ -61,6 +61,7 @@ Ref: user_and_anime.animeID > animes.id
 Provide all needed correct values.
 
 ```shell
+soda migrate up
 go run ./cmd/myAnimeList/
 -dsn="postgres://postgres:password@localhost:5432/database_name?sslmode=disable" \
 -migrations=migrations \
